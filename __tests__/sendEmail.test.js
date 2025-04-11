@@ -1,4 +1,5 @@
-const sendEmail = require('../src/sendEmail'); // Adaptez le chemin
+const path = require('path');
+const sendEmail = require(path.resolve(__dirname, '../src/sendEmail'));
 const nodemailer = require('nodemailer');
 
 jest.mock('nodemailer');
