@@ -41,7 +41,7 @@ const creercategorie = async (req, res) => {
     })
     } catch (error) {
     console.log(error)
-    res.status(500).send("Erreur interne du serveur")
+    res.status(500).send("Erreur FFFFinterne du serveur")
     }
    }
 
