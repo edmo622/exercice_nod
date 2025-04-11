@@ -1,24 +1,16 @@
-const sendEmail = require('./sendEmail');
+const sendEmail = require('../src/sendEmail'); // Adaptez le chemin
 const nodemailer = require('nodemailer');
 
-// Mock de Nodemailer
 jest.mock('nodemailer');
 
 describe('sendEmail', () => {
   const mockSendMail = jest.fn();
-  const mockTransport = {
-    sendMail: mockSendMail
-  };
+  const mockTransport = { sendMail: mockSendMail };
 
   beforeEach(() => {
-    // Réinitialiser les mocks avant chaque test
-    jest.clearAllMocks();
-    
-    // Configurer le mock par défaut
+    jest.resetAllMocks();
     nodemailer.createTransport.mockReturnValue(mockTransport);
     mockSendMail.mockResolvedValue({ response: '250 OK' });
-    
-    // Configurer les variables d'environnement
     process.env.EMAIL_USER = 'test@example.com';
     process.env.EMAIL_PASSWORD = 'password123';
   });
