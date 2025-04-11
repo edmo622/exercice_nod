@@ -8,25 +8,22 @@ const nodemailer = require('nodemailer');
  * @returns {Promise<string>} - Statut d'envoi
  */
 async function sendEmail(to, subject, text) {
-  // 1. Créer un transporteur SMTP (ex: Gmail)
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER, // Email depuis les variables d'environnement
-      pass: process.env.EMAIL_PASSWORD, // Mot de passe ou "App Password"
-    },
-  });
-
-  // 2. Options de l'email
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to,
-    subject,
-    text,
-  };
-
-  // 3. Envoyer l'email
   try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      text,
+    };
+
     const info = await transporter.sendMail(mailOptions);
     return `Email envoyé à ${to} : ${info.response}`;
   } catch (error) {

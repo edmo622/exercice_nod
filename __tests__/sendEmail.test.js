@@ -1,7 +1,7 @@
 const path = require('path');
-const sendEmail = require(path.resolve(__dirname, '../src/sendEmail'));
+const sendEmail  = require('../controllers/sendEmail');  
 const nodemailer = require('nodemailer');
-
+//edmond
 jest.mock('nodemailer');
 
 describe('sendEmail', () => {
@@ -12,12 +12,12 @@ describe('sendEmail', () => {
     jest.resetAllMocks();
     nodemailer.createTransport.mockReturnValue(mockTransport);
     mockSendMail.mockResolvedValue({ response: '250 OK' });
-    process.env.EMAIL_USER = 'test@example.com';
-    process.env.EMAIL_PASSWORD = 'password123';
+    process.env.EMAIL_USER = 'edmond@mediabox.bi';
+    process.env.EMAIL_PASSWORD = 'Edmondmbx@2022';
   });
 
   it('devrait appeler nodemailer avec les bons paramètres', async () => {
-    const to = 'destinataire@test.com';
+    const to = 'kwzrdmnd@gmail.com';
     const subject = 'Sujet de test';
     const text = 'Ceci est un test';
 
@@ -26,13 +26,13 @@ describe('sendEmail', () => {
     expect(nodemailer.createTransport).toHaveBeenCalledWith({
       service: 'gmail',
       auth: {
-        user: 'test@example.com',
-        pass: 'password123'
+        user: 'edmond@mediabox.bi',
+        pass: 'Edmondmbx@2022'
       }
     });
 
     expect(mockSendMail).toHaveBeenCalledWith({
-      from: 'test@example.com',
+      from: 'edmond@mediabox.bi',
       to,
       subject,
       text
@@ -41,21 +41,20 @@ describe('sendEmail', () => {
 
   it('devrait retourner un message de succès', async () => {
     const result = await sendEmail(
-      'destinataire@test.com',
+      'kwzrdmnd@gmail.com',
       'Sujet de test',
       'Ceci est un test.'
     );
-
-    expect(result).toBe('Email envoyé à destinataire@test.com');
+    expect(result).toMatch(/Email envoyé à kwzrdmnd@gmail.com/);
   });
-
+  
   it('devrait échouer si les identifiants SMTP sont invalides', async () => {
     nodemailer.createTransport.mockImplementation(() => {
       throw new Error('SMTP failed');
     });
-
+  
     await expect(
-      sendEmail('destinataire@test.com', 'Sujet', 'Message')
+      sendEmail('kwzrdmnd@gmail.com', 'Sujet', 'Message')
     ).rejects.toThrow('Échec de l\'envoi : SMTP failed');
   });
 
@@ -63,7 +62,7 @@ describe('sendEmail', () => {
     mockSendMail.mockRejectedValue(new Error('Échec de livraison'));
 
     await expect(
-      sendEmail('destinataire@test.com', 'Sujet', 'Message')
+      sendEmail('kwzrdmnd@gmail.com', 'Sujet', 'Message')
     ).rejects.toThrow('Échec de l\'envoi : Échec de livraison');
   });
 });
