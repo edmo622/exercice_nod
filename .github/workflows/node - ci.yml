@@ -29,51 +29,121 @@
 #     - run: npm ci
 #     - run: npm run build --if-present
 #     - run: npm test
+# name: Node.js CI
+
+# on:
+#   push:
+#     branches: ['**']  # Exécuté pour toutes les branches
+#   pull_request:
+#     branches: ['**']  # Exécuté pour toutes les branches
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         node-version: [18.x, 20.x, 22.x]
+#         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+#     steps:
+#     - uses: actions/checkout@v4
+    
+#     - name: Use Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#         cache: 'npm'
+#       id: setup-node  # Ajout d'un ID pour référence
+    
+#     - name: Get branch name
+#       run: echo "BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+#       shell: bash
+    
+#     - name: Print environment info
+#       run: |
+#         echo "Running on Node.js ${{ matrix.node-version }}"
+#         echo "Branch: ${{ env.BRANCH_NAME }}"
+#         echo "Runner OS: ${{ runner.os }}"
+    
+#     - name: Install dependencies
+#       run: npm ci
+    
+#     - name: Build project
+#       run: npm run build --if-present
+    
+#     - name: Run tests
+#       run: npm test
+    
+#     - name: Completion message
+#       run: echo "CI completed for ${{ env.BRANCH_NAME }} branch with Node.js ${{ matrix.node-version }}"
+
+
+
 name: Node.js CI
 
 on:
   push:
-    branches: ['**']  # Exécuté pour toutes les branches
+    branches: ['**']
   pull_request:
-    branches: ['**']  # Exécuté pour toutes les branches
+    branches: ['**']
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: ${{ github.ref_name }}
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
+    - name: "🔍 Checkout code"
+      uses: actions/checkout@v4
+      id: checkout
     
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: "🔄 Setup Node.js ${{ matrix.node-version }}"
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-      id: setup-node  # Ajout d'un ID pour référence
+      id: setup-node
     
-    - name: Get branch name
-      run: echo "BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
-      shell: bash
-    
-    - name: Print environment info
+    - name: "📋 Display context"
       run: |
-        echo "Running on Node.js ${{ matrix.node-version }}"
-        echo "Branch: ${{ env.BRANCH_NAME }}"
-        echo "Runner OS: ${{ runner.os }}"
+        echo "🏷️ Branch: ${{ env.BRANCH_NAME }}"
+        echo "🖥️ Runner: ${{ runner.os }}"
+        echo "📦 Node.js: ${{ matrix.node-version }}"
+        echo "📂 Workspace: ${{ github.workspace }}"
     
-    - name: Install dependencies
+    - name: "📦 Install dependencies (npm ci)"
       run: npm ci
+      id: npm-install
+      continue-on-error: false
     
-    - name: Build project
+    - name: "🏗️ Build project"
+      if: success()
       run: npm run build --if-present
+      id: build
+      continue-on-error: false
     
-    - name: Run tests
+    - name: "🧪 Run tests"
+      if: success()
       run: npm test
+      id: tests
+      continue-on-error: false
     
-    - name: Completion message
-      run: echo "CI completed for ${{ env.BRANCH_NAME }} branch with Node.js ${{ matrix.node-version }}"
+    - name: "📊 Job summary"
+      if: always()
+      run: |
+        echo "### 📌 CI Summary for ${{ env.BRANCH_NAME }} [Node.js ${{ matrix.node-version }}]" >> $GITHUB_STEP_SUMMARY
+        echo "| Étape | Statut |" >> $GITHUB_STEP_SUMMARY
+        echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Checkout | ${{ steps.checkout.outcome }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Node.js Setup | ${{ steps.setup-node.outcome }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Dependency Installation | ${{ steps.npm-install.outcome }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Build | ${{ steps.build.outcome }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Tests | ${{ steps.tests.outcome }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🟢 Success: ${{ job.status == 'success' && 'Oui' || 'Non' }}" >> $GITHUB_STEP_SUMMARY
