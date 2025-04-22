@@ -7,10 +7,10 @@ const nodemailer = require('nodemailer');
  * @param {string} text - Corps du message (texte)
  * @returns {Promise<string>} - Statut d'envoi
  */
-async function sendEmail(to, subject, text) {
+async function sendEmail(to, subject) {
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmailfgfg',
+      service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
