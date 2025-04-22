@@ -12,7 +12,7 @@ describe('sendEmail', () => {
     jest.resetAllMocks();
     nodemailer.createTransport.mockReturnValue(mockTransport);
     mockSendMail.mockResolvedValue({ response: '250 OK' });
-    process.env.EMAIL_USER = 'dmond@mediabox.bi';//edmondtest
+    process.env.EMAIL_USER = 'edmond@mediabox.bi';//edmondtest
     process.env.EMAIL_PASSWORD = 'Edmondmbx@2022';
   });
 
