@@ -11,6 +11,7 @@ const Vendeur = sequelize.define('utilisateurs', {
         type: DataTypes.STRING(50),
         allowNull: false
     },
+    
     PRENOM: {
         type: DataTypes.STRING(50),
         allowNull: false
